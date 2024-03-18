@@ -108,3 +108,4 @@ class TriviaViewController: UIViewController {
   }
 }
 
+// failing to load the simulator 
