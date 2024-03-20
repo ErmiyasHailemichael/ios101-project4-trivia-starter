@@ -12,7 +12,7 @@ struct TriviaQuestion: Codable {
     let difficulty: String
     let category: String
     let question: String
-    let correctAnswer: String // Updated key name
+    let correctAnswer: String 
     let incorrectAnswers: [String]
     
     enum CodingKeys: String, CodingKey {
