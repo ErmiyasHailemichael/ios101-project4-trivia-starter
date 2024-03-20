@@ -7,35 +7,34 @@
 
 import UIKit
 
-class TriviaQuestionService{
-    private let apiUrl = "https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple"
+class TriviaQuestionService {
+    private let apiUrl = "https://opentdb.com/api.php?amount=10"
     
-    func fetchTriviaQuestions(completion: @escaping ([TriviaQuestion]?, Error?) -> Void) {
-        guard let url = URL(string: apiUrl) else {
-            completion(nil, NSError(domain: "Invalid URL", code: 0, userInfo: nil))
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard let data = data, error == nil else {
-                completion(nil, error)
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let decodedQuestions = try decoder.decode([TriviaQuestion].self, from: data)
-                completion(decodedQuestions, nil)
-            } catch {
-                completion(nil, error)
-            }
-        }
-        
-        task.resume()
-    }
-    
-    
-    
+    func fetchTriviaQuestions(completion: @escaping (Result<[TriviaQuestion], Error>) -> Void) {
+           guard let url = URL(string: apiUrl) else {
+               completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
+               return
+           }
+           
+           let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+               guard let data = data, error == nil else {
+                   completion(.failure(error ?? NSError(domain: "Unknown error", code: 0, userInfo: nil)))
+                   return
+               }
+               
+               do {
+                   let decoder = JSONDecoder()
+                   let triviaResponse = try decoder.decode(TriviaResponse.self, from: data)
+                   completion(.success(triviaResponse.results))
+               } catch {
+                   completion(.failure(error))
+               }
+           }
+           
+           task.resume()
+       }
+   }
+
     class TriviaViewController: UIViewController {
         
         @IBOutlet weak var currentQuestionNumberLabel: UILabel!
@@ -56,6 +55,7 @@ class TriviaQuestionService{
         
         override func viewDidLoad() {
             super.viewDidLoad()
+            print("TriviaViewController: View did load")
             addGradient()
             questionContainerView.layer.cornerRadius = 8.0
             
@@ -65,21 +65,21 @@ class TriviaQuestionService{
         
         
         private func fetchTriviaQuestions() {
-            triviaService.fetchTriviaQuestions { [weak self] (questions, error) in
+            triviaService.fetchTriviaQuestions { [weak self] result in
                 guard let self = self else { return }
-                
-                
-                if let questions = questions {
+
+                switch result {
+                case .success(let questions):
                     DispatchQueue.main.async {
                         self.questions = questions
                         self.updateQuestion(withQuestionIndex: self.currQuestionIndex)
                     }
-                } else if let error = error {
+                case .failure(let error):
                     print("Error fetching trivia questions: \(error)")
-                    
                 }
             }
         }
+
         
         private func updateQuestion(withQuestionIndex questionIndex: Int) {
             currentQuestionNumberLabel.text = "Question: \(questionIndex + 1)/\(questions.count)"
@@ -109,16 +109,29 @@ class TriviaQuestionService{
                 numCorrectQuestions += 1
             }
             currQuestionIndex += 1
-            guard currQuestionIndex < questions.count else {
+            
+            
+            if currQuestionIndex < questions.count {
+               
+                updateQuestion(withQuestionIndex: currQuestionIndex)
+            } else {
+               
                 showFinalScore()
-                return
             }
-            updateQuestion(withQuestionIndex: currQuestionIndex)
         }
+
         
         private func isCorrectAnswer(_ answer: String) -> Bool {
+            
+            guard currQuestionIndex < questions.count else {
+                
+                print("Error: currQuestionIndex is out of range")
+                return false
+            }
+            
             return answer == questions[currQuestionIndex].correctAnswer
         }
+
         
         private func showFinalScore() {
             let alertController = UIAlertController(title: "Game over!",
@@ -159,4 +172,4 @@ class TriviaQuestionService{
             updateToNextQuestion(answer: sender.titleLabel?.text ?? "")
         }
     }
-}
+

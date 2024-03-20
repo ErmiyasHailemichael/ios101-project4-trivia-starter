@@ -8,9 +8,23 @@
 import Foundation
 
 struct TriviaQuestion: Codable {
-  let category: String
-  let question: String
-  let correctAnswer: String
-  let incorrectAnswers: [String]
+    let type: String
+    let difficulty: String
+    let category: String
+    let question: String
+    let correctAnswer: String // Updated key name
+    let incorrectAnswers: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case type, difficulty, category, question
+        case correctAnswer = "correct_answer" 
+        case incorrectAnswers = "incorrect_answers"
+    }
 }
+
+struct TriviaResponse: Codable {
+//    let responseCode: Int
+    let results: [TriviaQuestion]
+}
+
 
