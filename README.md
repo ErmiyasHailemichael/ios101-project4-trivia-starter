@@ -12,11 +12,11 @@ Time spent: **X** hours spent in total
 
 The following **required** functionality is completed:
 
-- [ ] User can view and answer at least 5 trivia questions.
-- [ ] App retrieves question data from the Open Trivia Database API.
-- [ ] Fetch a different set of questions if the user indicates they would like to reset the game.
-- [ ] Users can see score after submitting all questions.
-- [ ] True or False questions only have two options.
+- [x] User can view and answer at least 5 trivia questions.
+- [x] App retrieves question data from the Open Trivia Database API.
+- [x] Fetch a different set of questions if the user indicates they would like to reset the game.
+- [x] Users can see score after submitting all questions.
+- [x] True or False questions only have two options.
 
 
 The following **optional** features are implemented:
@@ -34,11 +34,13 @@ The following **additional** features are implemented:
 Here is a reminder on how to embed Loom videos on GitHub. Feel free to remove this reminder once you upload your README. 
 
 [Guide]](https://www.youtube.com/watch?v=GA92eKlYio4) .
-
+(https://www.loom.com/share/d60ca13d488e41edbbffa9fef28a905c?sid=a2a675dc-408d-441a-97e5-3128772e56e4)
 ## Notes
 
 Describe any challenges encountered while building the app.
-
+- Not able to fetch the data even though it passed the postman test
+- Not able to select a category
+- Not able to view the Trivia View Controller
 ## License
 
     Copyright [yyyy] [name of copyright owner]
